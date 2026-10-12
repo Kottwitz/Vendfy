@@ -21,44 +21,44 @@ A API estará disponível em `http://localhost:8000`. Para parar os serviços,
 execute `docker compose down`. Os dados do PostgreSQL permanecem no volume
 `postgres_data`.
 
-## Deploy de demonstração no Google Cloud Run
+## Deploy de demonstração na Vercel
 
-O container respeita a variável `PORT` fornecida pelo Cloud Run. Para uma demo
-com dados fictícios, o backend pode usar Cloud Run e conectar a um PostgreSQL
-gerenciado, como o plano gratuito do Neon. Não use o PostgreSQL local/Compose
-como banco de produção: ele não estará acessível ao serviço na nuvem.
+A Vercel suporta FastAPI usando Python Functions. Este monorepo usa dois projetos
+Vercel ligados ao mesmo repositório GitHub: um com Root Directory `backend`
+(API) e outro com Root Directory `frontend` (Next.js). Importe o mesmo
+repositório para cada projeto. A Vercel detecta FastAPI por
+`backend/requirements.txt` e `backend/app/main.py`.
 
-O Cloud Run tem cota mensal gratuita, mas exige uma conta de faturamento e cobra
-o uso que ultrapassar a cota. Defina limites de instâncias, acompanhe o consumo
-e não considere essa opção custo zero garantido. Use a região `us-central1` para
-os limites gratuitos publicados com base nessa região.
+No projeto da API, configure estas variáveis em **Settings → Environment
+Variables**, em Production e Preview:
 
-Com o Google Cloud CLI instalado e autenticado, na pasta `backend`:
-
-```powershell
-gcloud auth login
-gcloud config set project SEU_PROJECT_ID
-gcloud run deploy vendfy-api --source . --region us-central1 --allow-unauthenticated --port 8080 --memory 512Mi --cpu 1 --min 0 --max 1
-```
-
-Configure as variáveis e credenciais do serviço no Google Cloud Console, sem
-gravá-las no repositório:
-
-- `DATABASE_URL`: URL async do PostgreSQL remoto (`postgresql+asyncpg://...`).
-- `SECURITY__JWT_SECRET_KEY`: segredo aleatório longo e exclusivo para esse
+- `DATABASE_URL`: URL do Neon com pooler habilitado para o runtime serverless,
+  usando formato `postgresql+asyncpg://...` e `ssl=require`. Copie a URL com
+  pooling habilitado na opção Connect do Neon; não publique nem comite a URL.
+- `SECURITY__JWT_SECRET_KEY`: segredo aleatório longo, exclusivo para o
   ambiente.
-- `SECURITY__CREDENTIAL_ENCRYPTION_KEY`: chave Fernet exclusiva; faça backup
-  seguro, pois os segredos comerciais salvos não podem ser lidos sem ela.
+- `SECURITY__CREDENTIAL_ENCRYPTION_KEY`: chave Fernet exclusiva. Faça backup
+  seguro: credenciais comerciais criptografadas no banco só podem ser lidas
+  usando essa mesma chave.
 
-Após criar o PostgreSQL remoto e configurar `DATABASE_URL`, aplique as migrations
-uma vez a esse banco usando o mesmo ambiente Python:
+As migrations do branch `production` do Neon já foram aplicadas até a revisão
+`20261012_06`. Não rode `alembic upgrade head` durante o build/deploy. Para
+executar migrations futuras, use uma conexão direta (sem pooler) do Neon e rode
+localmente, a partir desta pasta, com `DATABASE_URL` configurada apenas no `.env`
+local:
 
 ```powershell
 python -m alembic upgrade head
 ```
 
-Confirme a API em `https://SUA_API.run.app/health`. Em seguida, configure
-`BACKEND_API_URL` no deploy do frontend com essa URL base e faça novo deploy.
+Depois do primeiro deploy, teste `https://SUA_API.vercel.app/health`. Guarde
+essa URL base: ela será o valor de `BACKEND_API_URL` no projeto frontend.
+
+A Vercel Hobby destina-se a uso pessoal e não comercial; use este deploy apenas
+como demonstração com dados fictícios. Verifique os limites atuais de Python
+Functions e do plano antes de usar o serviço. Teste a geração de PDF e os
+provedores de email/WhatsApp após publicar, pois dependem dos limites e do acesso
+de rede disponíveis às Functions.
 
 ## Executar localmente
 

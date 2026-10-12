@@ -24,9 +24,9 @@ O frontend usa o backend local em `http://127.0.0.1:8000` por padrão.
 
 ## Deploy de demonstração
 
-As instruções para Cloud Run estão em [backend/README.md](backend/README.md);
-as instruções do frontend estão em [frontend/README.md](frontend/README.md).
-Use dados fictícios em uma demonstração. Os serviços gratuitos têm limites,
-exigem contas externas e podem gerar cobranças se o consumo exceder as cotas.
+Implante o backend FastAPI e o frontend Next.js como dois projetos Vercel a
+partir do mesmo repositório. Consulte [backend/README.md](backend/README.md) e
+[frontend/README.md](frontend/README.md) para os passos e variáveis necessárias.
+Use dados fictícios: a Vercel Hobby é restrita a uso pessoal e não comercial.
 
 Não envie arquivos `.env`, credenciais ou dados reais para o GitHub.

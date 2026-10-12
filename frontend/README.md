@@ -20,12 +20,14 @@ usar o prefixo `NEXT_PUBLIC_`.
 
 ## Deploy de demonstração
 
-Para uma demo com dados fictícios, o frontend pode ser implantado na Vercel
-(Hobby) e a API no Google Cloud Run, com PostgreSQL remoto. Defina
-`BACKEND_API_URL` nas variáveis de ambiente do projeto Vercel com a URL HTTPS do
-serviço Cloud Run. Não use o endereço local `127.0.0.1` em produção. A Vercel
-Hobby é restrita a uso pessoal/não comercial; não a use para atender clientes
-ou operar o Vendfy comercialmente.
+Importe o monorepo na Vercel como um projeto com Root Directory `frontend`.
+Configure `BACKEND_API_URL` em **Settings → Environment Variables** para a URL
+HTTPS do projeto Vercel que hospeda a API FastAPI (sem sufixo de rota), aplique
+em Production e Preview e faça novo deploy. Não use o endereço local
+`127.0.0.1` em produção.
+
+A Vercel Hobby destina-se a uso pessoal e não comercial; use este deploy apenas
+como demonstração com dados fictícios.
 
 ## Telas
 
